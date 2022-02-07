@@ -52,10 +52,7 @@ public class BookController: ControllerBase
         {
             return NotFound();
         }
-        foreach (var genre in request.Genres)
-        {
-            _databaseContext.Genres.Single(g => g.GenreId == genre.GenreId);
-        }
+
         var newBook = new Book
         {
             Name = request.Name,
@@ -64,6 +61,10 @@ public class BookController: ControllerBase
             Author = author,
             Genres = new List<Genre>()
         };
+        foreach (var genre in request.Genres)
+        {
+            newBook.Genres.FirstOrDefault(genre);
+        }
         _databaseContext.Books.Add(newBook);
         await _databaseContext.SaveChangesAsync();
         return Ok();
