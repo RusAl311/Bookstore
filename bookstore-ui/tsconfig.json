@@ -1,0 +1,22 @@
+{
+    "compilerOptions": {
+        "strict": true,
+        "baseUrl": "./src",
+        "allowSyntheticDefaultImports": true,
+        "jsx": "react",
+        "lib": ["dom", "es2015", "es2015.promise", "es2017.object"],
+        "esModuleInterop": true,
+        "module": "esnext",
+        "moduleResolution": "node",
+        "target": "es5",
+        "importsNotUsedAsValues": "preserve",
+        "noUnusedLocals": true,
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "sourceMap": true,
+        "skipLibCheck": true,
+        "allowSyntheticDefaultImports": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules", "build", "webpack"]
+}

@@ -1,0 +1,70 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP .NET Core service.
+
+version: '3.8'
+
+networks:
+  bookstore-network:
+    driver: bridge
+
+
+services:
+
+
+  bookstoredb:
+    container_name: bookstoredb
+    image: postgres:13.5
+    environment:
+      POSTGRES_DB: "bookstore_db"
+      POSTGRES_USER: "bookstore_user"
+      POSTGRES_PASSWORD: "BookSt0re9876"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - ./bookstore-db/Init Database:/docker-entrypoint-initdb.d
+      - ./bookstore-db:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+    networks:
+      - bookstore-network
+
+  pgadmin:
+    container_name: bookstorepgadmin
+    image: dpage/pgadmin4:5.7
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "rustamm.aliyev@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "BookSt0re9876"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - ./bookstore-db/pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    networks:
+      - bookstore-network
+
+  bookstorebe:
+    container_name: bookstorebe
+    image: bookstorebe
+    build:
+      context: .
+      dockerfile: bookstore-be/Dockerfile
+    ports:
+      - 5000:5000
+    depends_on:
+      - bookstoredb
+    networks:
+      - bookstore-network      
+
+  bookstoreui:
+    container_name: bookstoreui
+    build:
+      context: .
+      dockerfile: bookstore-ui/Dockerfile
+    volumes:
+      - '.:/app'
+      - '/app/node_modules'
+    ports:
+      - 3000:80
+
+
+
