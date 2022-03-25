@@ -65,6 +65,8 @@ services:
       - '/app/node_modules'
     ports:
       - 3000:80
+    networks:
+      - bookstore-network  
 
 
 

@@ -1,5 +1,6 @@
 using bookstore_be.Data;
 using bookstore_be.DTOs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,18 +10,29 @@ namespace bookstore_be.Controllers;
 public class BookController: ControllerBase
 {
     private readonly DatabaseContext _databaseContext;
+
     public BookController(DatabaseContext databaseContext)
     {
         _databaseContext = databaseContext; 
     }
     
     // Gel all books
+    [Authorize]
     [HttpGet]
     [Route("/api/book/all")]
-    public async Task<IActionResult> GetAsync()
+    public async Task<ActionResult> GetAsync()
     {
 
-        var books = await _databaseContext.Books.Include(b => b.Author).ToListAsync();
+        // var books = await _databaseContext.Books.Include(b => b.Author).Include(g => g.Genres).ToListAsync();
+        var books = await _databaseContext.Books.Select(b => new 
+        {
+            b.BookId,
+            b.Name,
+            b.Description,
+            b.Pages,
+            b.Author,
+            Genres = b.Genres.Select(g => new { g.GenreId, g.Name}).ToList()
+        }).ToListAsync();
         if (books == null)
         {
             return NotFound();
@@ -52,7 +64,6 @@ public class BookController: ControllerBase
         {
             return NotFound();
         }
-
         var newBook = new Book
         {
             Name = request.Name,
@@ -75,7 +86,6 @@ public class BookController: ControllerBase
     [Route("/api/book/update/{id}")]
     public async Task<IActionResult> PutBookAsync(Book bookToUpdate)
     {
-
         _databaseContext.Books.Update(bookToUpdate);
         await _databaseContext.SaveChangesAsync();
         return Ok();
