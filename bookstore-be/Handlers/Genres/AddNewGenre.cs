@@ -5,20 +5,20 @@ namespace bookstore_be.Handlers.Genres
 {
     public class AddNewGenre
     {
-        public class Command : IRequest<string>
+        public class Command : IRequest<int>
         {
             public string Name { get; set; }
             public string Description { get; set; }
         }
 
-        public class CommandHandler : IRequestHandler<Command, string>
+        public class CommandHandler : IRequestHandler<Command, int>
         {
             private readonly DatabaseContext _databaseContext;
             public CommandHandler(DatabaseContext databaseContext)
             {
                 _databaseContext = databaseContext;
             }
-            public async Task<string> Handle(Command request, CancellationToken cancellationToken)
+            public async Task<int> Handle(Command request, CancellationToken cancellationToken)
             {
                 var newGenre = new Genre
                 {
@@ -29,7 +29,7 @@ namespace bookstore_be.Handlers.Genres
                 await _databaseContext.Genres.AddAsync(newGenre, cancellationToken);
                 await _databaseContext.SaveChangesAsync(cancellationToken);
 
-                return await Task.FromResult("sds");
+                return newGenre.GenreId;
             }
         }
     }

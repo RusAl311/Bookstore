@@ -2,76 +2,72 @@ using bookstore_be.Data;
 using bookstore_be.Handlers.Genres;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using static bookstore_be.Handlers.Genres.DeleteGenre;
 
 namespace bookstore_be.Controllers;
 
 [ApiController]
-public class GenreController: ControllerBase
+public class GenreController : BaseController
 {
     private readonly DatabaseContext _databaseContext;
 
-    private readonly IMediator _mediator;
-    public GenreController(DatabaseContext databaseContext, IMediator mediator)
+    public GenreController(DatabaseContext databaseContext)
     {
         _databaseContext = databaseContext; 
-        _mediator = mediator;
     }
 
     // Gel all genres
     [HttpGet]
-    [Route("/api/genre/all")]
+    [Route("genre/all")]
     public async Task<IActionResult> GetGenres() 
     {
-        var genres = await _mediator.Send(new GetGenres.Query());
+        var genres = await Mediator.Send(new GetGenres.Query());
         return Ok(genres);
     }
     
 
     // Get a genre by id
     [HttpGet]
-    [Route("/api/genre/{id}")]
+    [Route("genre/{id}")]
     public async Task<IActionResult> GetGenreById(int id) 
     {
-        var genre = await _mediator.Send(new GetGenreById.Query { GenreId = id });
-        return genre == null ? NotFound() : Ok(genre);
+        var query = new GetGenreById.Query
+        {
+            GenreId = id
+        };
+        var genre = await Mediator.Send(query);
+        return Ok(genre);
     } 
 
     // Create a new genre
     [HttpPost]
-    [Route("/api/genre/add")]
+    [Route("genre/add")]    
     public async Task<IActionResult> AddNewGenre([FromBody] AddNewGenre.Command command)
     {
-        // _databaseContext.Genres.Add(genre);
-        // await _databaseContext.SaveChangesAsync();
-        // return Ok();
-        var createdGenreId = await _mediator.Send(command);
-        return Ok();
-        // return Ok(CreatedAtAction(nameof(GetGenreById), new { id = createdGenreId }, null));
+        var createdGenreId = await Mediator.Send(command);
+        return Ok(createdGenreId);
     }
 
     // Update the genre 
     [HttpPut]
-    [Route("/api/genre/update/{id}")]
-    public async Task<IActionResult> PutGenreAsync(Genre genreToUpdate)
+    [Route("genre/update/{id}")]
+    public async Task<IActionResult> UpdateGenre([FromBody] UpdateGenre.Command command)
     {
-        _databaseContext.Genres.Update(genreToUpdate);
-        await _databaseContext.SaveChangesAsync();
-        return Ok();
+        await Mediator.Send(command);
+        return NoContent();
     }
 
     // Delete the genre
     [HttpDelete]
-    [Route("/api/genre/delete/{id}")]
-    public async Task<IActionResult> DeleteGenreAsync(int id)
+    [Route("genre/delete/{id}")]
+    public async Task<IActionResult> DeleteGenre(int id)
     {
-        var genreToDelete = await _databaseContext.Genres.FindAsync(id);
-        if (genreToDelete == null)
+        var command = new Command
         {
-            return NotFound();
-        }
-        _databaseContext.Genres.Remove(genreToDelete);
-        await _databaseContext.SaveChangesAsync();
-        return Ok();
+            GenreId = id
+        };
+        await Mediator.Send(command);
+        return NoContent();
     }
 
 
