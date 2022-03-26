@@ -1,6 +1,5 @@
 using bookstore_be.Data;
 using bookstore_be.DTOs;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,7 +16,6 @@ public class BookController: ControllerBase
     }
     
     // Gel all books
-    [Authorize]
     [HttpGet]
     [Route("/api/book/all")]
     public async Task<ActionResult> GetAsync()

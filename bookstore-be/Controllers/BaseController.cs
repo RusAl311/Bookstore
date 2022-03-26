@@ -1,9 +1,11 @@
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace bookstore_be.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api")]
     public abstract class BaseController : ControllerBase
     {

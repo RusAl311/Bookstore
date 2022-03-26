@@ -60,9 +60,6 @@ services:
     build:
       context: .
       dockerfile: bookstore-ui/Dockerfile
-    volumes:
-      - '.:/app'
-      - '/app/node_modules'
     ports:
       - 3000:80
     networks:
